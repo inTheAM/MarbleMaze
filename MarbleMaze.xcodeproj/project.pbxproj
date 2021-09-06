@@ -14,6 +14,14 @@
 		E28ABE2426E67291006882DD /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28ABE2326E67291006882DD /* GameViewController.swift */; };
 		E28ABE2726E67291006882DD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE2526E67291006882DD /* Main.storyboard */; };
 		E28ABE2926E67293006882DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE2826E67293006882DD /* Assets.xcassets */; };
+		E28ABE3826E672EB006882DD /* finish@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3126E672EB006882DD /* finish@2x.png */; };
+		E28ABE3926E672EB006882DD /* level1.txt in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3226E672EB006882DD /* level1.txt */; };
+		E28ABE3A26E672EB006882DD /* star@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3326E672EB006882DD /* star@2x.png */; };
+		E28ABE3B26E672EB006882DD /* player@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3426E672EB006882DD /* player@2x.png */; };
+		E28ABE3C26E672EB006882DD /* block@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3526E672EB006882DD /* block@2x.png */; };
+		E28ABE3D26E672EB006882DD /* vortex@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3626E672EB006882DD /* vortex@2x.png */; };
+		E28ABE3E26E672EB006882DD /* background@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E28ABE3726E672EB006882DD /* background@2x.jpg */; };
+		E28ABE4026E6770C006882DD /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28ABE3F26E6770C006882DD /* Game.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +34,14 @@
 		E28ABE2626E67291006882DD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E28ABE2826E67293006882DD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E28ABE2A26E67293006882DD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E28ABE3126E672EB006882DD /* finish@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "finish@2x.png"; sourceTree = "<group>"; };
+		E28ABE3226E672EB006882DD /* level1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level1.txt; sourceTree = "<group>"; };
+		E28ABE3326E672EB006882DD /* star@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "star@2x.png"; sourceTree = "<group>"; };
+		E28ABE3426E672EB006882DD /* player@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player@2x.png"; sourceTree = "<group>"; };
+		E28ABE3526E672EB006882DD /* block@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "block@2x.png"; sourceTree = "<group>"; };
+		E28ABE3626E672EB006882DD /* vortex@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vortex@2x.png"; sourceTree = "<group>"; };
+		E28ABE3726E672EB006882DD /* background@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "background@2x.jpg"; sourceTree = "<group>"; };
+		E28ABE3F26E6770C006882DD /* Game.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,12 +78,28 @@
 				E28ABE1D26E67291006882DD /* GameScene.sks */,
 				E28ABE1F26E67291006882DD /* Actions.sks */,
 				E28ABE2126E67291006882DD /* GameScene.swift */,
+				E28ABE3F26E6770C006882DD /* Game.swift */,
 				E28ABE2326E67291006882DD /* GameViewController.swift */,
 				E28ABE2526E67291006882DD /* Main.storyboard */,
 				E28ABE2826E67293006882DD /* Assets.xcassets */,
 				E28ABE2A26E67293006882DD /* Info.plist */,
+				E28ABE3026E672EB006882DD /* Content */,
 			);
 			path = MarbleMaze;
+			sourceTree = "<group>";
+		};
+		E28ABE3026E672EB006882DD /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				E28ABE3126E672EB006882DD /* finish@2x.png */,
+				E28ABE3226E672EB006882DD /* level1.txt */,
+				E28ABE3326E672EB006882DD /* star@2x.png */,
+				E28ABE3426E672EB006882DD /* player@2x.png */,
+				E28ABE3526E672EB006882DD /* block@2x.png */,
+				E28ABE3626E672EB006882DD /* vortex@2x.png */,
+				E28ABE3726E672EB006882DD /* background@2x.jpg */,
+			);
+			path = Content;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -128,9 +160,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				E28ABE2726E67291006882DD /* Main.storyboard in Resources */,
+				E28ABE3E26E672EB006882DD /* background@2x.jpg in Resources */,
+				E28ABE3C26E672EB006882DD /* block@2x.png in Resources */,
 				E28ABE1E26E67291006882DD /* GameScene.sks in Resources */,
+				E28ABE3A26E672EB006882DD /* star@2x.png in Resources */,
+				E28ABE3D26E672EB006882DD /* vortex@2x.png in Resources */,
+				E28ABE3826E672EB006882DD /* finish@2x.png in Resources */,
+				E28ABE3926E672EB006882DD /* level1.txt in Resources */,
 				E28ABE2926E67293006882DD /* Assets.xcassets in Resources */,
 				E28ABE2026E67291006882DD /* Actions.sks in Resources */,
+				E28ABE3B26E672EB006882DD /* player@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +183,7 @@
 				E28ABE2226E67291006882DD /* GameScene.swift in Sources */,
 				E28ABE2426E67291006882DD /* GameViewController.swift in Sources */,
 				E28ABE1C26E67291006882DD /* AppDelegate.swift in Sources */,
+				E28ABE4026E6770C006882DD /* Game.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,7 +332,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgua.MarbleMaze;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -311,7 +351,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.mgua.MarbleMaze;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};

@@ -5,84 +5,183 @@
 //  Created by Ahmed Mgua on 06/09/2021.
 //
 
+import CoreMotion
 import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
-    
+    let game = Game()
+	var motionManager: CMMotionManager!
+	var player: SKSpriteNode!
+	var lastTouchPosition: CGPoint?
+	var scoreLabel: SKLabelNode!
+	
     override func didMove(to view: SKView) {
-        
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
-        
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red
-            self.addChild(n)
-        }
+		let background = SKSpriteNode(imageNamed: "background.jpg")
+		background.position = CGPoint(x: 512, y: 384)
+		background.blendMode = .replace
+		background.zPosition = -1
+		addChild(background)
+		physicsWorld.gravity = .zero
+		game.delegate = self
+		game.loadLevel()
+		createPLayer()
+		motionManager = CMMotionManager()
+		motionManager.startAccelerometerUpdates()
+		scoreLabel = SKLabelNode(text: "Score: 0")
+		scoreLabel.fontName = "Chalkduster"
+		scoreLabel.horizontalAlignmentMode = .left
+		scoreLabel.position = CGPoint(x: 16, y: 16)
+		scoreLabel.zPosition = 2
+		addChild(scoreLabel)
+		physicsWorld.contactDelegate = self
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+		guard let touch = touches.first else { return }
+		lastTouchPosition = touch.location(in: self)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
+		guard let touch = touches.first else { return }
+		lastTouchPosition = touch.location(in: self)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+        lastTouchPosition = nil
     }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    
+	
     override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
+		guard !game.isGameOver else { return }
+		#if targetEnvironment(simulator)
+		if let currentTouch = lastTouchPosition {
+			let difference = CGPoint(x: currentTouch.x - player.position.x, y: currentTouch.y - player.position.y)
+			physicsWorld.gravity = CGVector(dx: difference.x / 100, dy: difference.y / 100)
+		}
+		#else
+		if let acceleration = motionManager.accelerometerData?.acceleration {
+			physicsWorld.gravity = CGVector(dx: acceleration.y * -50, dy: acceleration.x * 50)
+		}
+		
+		#endif
     }
+}
+
+extension GameScene: SKPhysicsContactDelegate	{
+	func didBegin(_ contact: SKPhysicsContact) {
+		guard let nodeA = contact.bodyA.node else { return }
+		guard let nodeB = contact.bodyB.node else { return }
+		
+		if nodeA == player {
+			playerCollided(with: nodeB)
+		} else if nodeB == player {
+			playerCollided(with: nodeA)
+		}
+	}
+	
+	func playerCollided(with node: SKNode)	{
+		if node.name == "vortex" {
+			player.physicsBody?.isDynamic = false
+			game.endGame()
+			game.decreaseScore()
+			let move = SKAction.move(to: node.position, duration: 0.25)
+			let scale = SKAction.scale(to: 0.0001, duration: 0.25)
+			let remove = SKAction.removeFromParent()
+			let sequence = SKAction.sequence([move, scale, remove])
+			player.run(sequence) { [weak self] in
+				self?.createPLayer()
+				self?.game.restart()
+			}
+		} else if node.name == "star" {
+			node.removeFromParent()
+			game.increaseScore()
+			
+		}	else if node.name == "finish"	{
+//			load next level
+		}
+	}
+}
+
+extension GameScene: GameDelegate	{
+	func didUpdateScore(_ score: Int) {
+		scoreLabel.text = "Score: \(score)"
+	}
+	func didLoadLevel(_ level: EnumeratedSequence<ReversedCollection<[String]>>) {
+		for (row, line) in level {
+			for (column, letter) in line.enumerated()	{
+				let position = CGPoint(x: (64 * column) + 32, y: (64 * row) + 32)
+				
+				if letter == "x" {
+					let node = SKSpriteNode(imageNamed: "block")
+					node.position = position
+					
+					node.physicsBody = SKPhysicsBody(rectangleOf: node.size)
+					node.physicsBody?.categoryBitMask = Game.ObjectType.wall.rawValue
+					node.physicsBody?.isDynamic = false
+					
+					addChild(node)
+					
+				}	else if letter ==	"v"	{
+					let node = SKSpriteNode(imageNamed: "vortex")
+					node.name = "vortex"
+					node.position = position
+					node.run(SKAction.repeatForever(SKAction.rotate(byAngle: .pi, duration: 1)))
+					
+					node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 2)
+					node.physicsBody?.isDynamic = false
+					node.physicsBody?.categoryBitMask = Game.ObjectType.vortex.rawValue
+					node.physicsBody?.contactTestBitMask = Game.ObjectType.player.rawValue
+					node.physicsBody?.collisionBitMask = 0
+					
+					addChild(node)
+					
+				}	else if letter == 	"s"	{
+					let node = SKSpriteNode(imageNamed: "star")
+					node.name = "star"
+					node.position = position
+					
+					node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 2)
+					node.physicsBody?.isDynamic = false
+					node.physicsBody?.categoryBitMask = Game.ObjectType.star.rawValue
+					node.physicsBody?.contactTestBitMask = Game.ObjectType.player.rawValue
+					node.physicsBody?.collisionBitMask = 0
+					
+					addChild(node)
+					
+				}	else if letter ==	"f"	{
+					let node = SKSpriteNode(imageNamed: "finish")
+					node.name = "finish"
+					node.position = position
+					
+					node.physicsBody = SKPhysicsBody(circleOfRadius: node.size.width / 2)
+					node.physicsBody?.isDynamic = false
+					node.physicsBody?.categoryBitMask = Game.ObjectType.finish.rawValue
+					node.physicsBody?.contactTestBitMask = Game.ObjectType.player.rawValue
+					node.physicsBody?.collisionBitMask = 0
+					
+					addChild(node)
+					
+				}	else if letter ==	" "	{
+					
+				}	else	{
+					fatalError("Unknown character in level file")
+				}
+			}
+		}
+	}
+	
+	func createPLayer()	{
+		player = SKSpriteNode(imageNamed: "player")
+		player.position = CGPoint(x: 96, y: 672)
+		player.zPosition = 1
+		
+		player.physicsBody = SKPhysicsBody(circleOfRadius: player.size.width / 2)
+		player.physicsBody?.allowsRotation = false
+		player.physicsBody?.linearDamping = 0.5
+		player.physicsBody?.categoryBitMask = Game.ObjectType.player.rawValue
+		player.physicsBody?.contactTestBitMask = Game.ObjectType.star.rawValue | Game.ObjectType.vortex.rawValue | Game.ObjectType.finish.rawValue
+		player.physicsBody?.collisionBitMask = Game.ObjectType.wall.rawValue
+		
+		addChild(player)
+	}
 }
